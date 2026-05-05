@@ -3,196 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VYNTAR Visibility Quiz</title>
+<title>Audit Request Received — VYNTAR</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0a0a0f;font-family:Georgia,serif;color:#f0ede8;min-height:100vh}
-.page{max-width:680px;margin:0 auto;padding:80px 24px}
-.center{text-align:center}
+.wrap{max-width:680px;margin:0 auto;padding:80px 24px;text-align:center}
 .eyebrow{font-size:13px;letter-spacing:4px;color:#f0a500;text-transform:uppercase;margin-bottom:48px;display:block}
-.eyebrow.c{text-align:center}
-h1{font-size:clamp(32px,6vw,56px);line-height:1.15;margin:0 0 20px;font-weight:400}
-h1 span,h2 span{color:#f0a500}
-h2{font-size:clamp(22px,4vw,32px);line-height:1.35;font-weight:400;margin:0 0 24px}
+.icon{font-size:40px;margin-bottom:24px;display:block}
+h1{font-size:clamp(26px,5vw,40px);font-weight:400;line-height:1.25;margin:0 0 20px;color:#f0ede8}
 .sub{font-size:18px;color:#999;line-height:1.7;max-width:520px;margin:0 auto 48px}
-.sub.sm{font-size:15px;margin-bottom:32px}
-.micro{margin-top:20px;font-size:13px;color:#555}
-.cta{background:#f0a500;color:#0a0a0f;border:none;padding:18px 40px;font-size:16px;font-weight:700;font-family:Georgia,serif;border-radius:6px;cursor:pointer;letter-spacing:.5px;transition:.2s ease;width:100%}
+.confirm-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px;margin-bottom:40px;text-align:left}
+.confirm-box h3{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:#f0a500;margin:0 0 20px;text-align:center}
+.tick{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;font-size:15px;color:#ccc;line-height:1.6}
+.tick:last-child{margin-bottom:0}
+.tick-icon{color:#00d084;font-size:16px;flex-shrink:0;margin-top:2px}
+.explain{background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:12px;padding:28px;margin-bottom:40px;color:#ccc;line-height:1.8}
+.explain strong{color:#f0a500}
+.urgency{font-size:13px;color:#555;margin-bottom:32px;font-style:italic}
+.cta{background:#f0a500;color:#0a0a0f;border:none;padding:18px 40px;font-size:16px;font-weight:700;font-family:Georgia,serif;border-radius:6px;cursor:pointer;letter-spacing:.5px;transition:.2s ease;width:100%;display:block;text-decoration:none;margin-bottom:20px}
 .cta:hover{background:#ffb800;transform:translateY(-2px);box-shadow:0 8px 30px rgba(240,165,0,.3)}
-.cta:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.prob{margin-top:80px;padding:48px 0;border-top:1px solid rgba(255,255,255,.06)}
-.prob h2 span{color:#ff6b35}
-.prob p{color:#888;line-height:1.8;margin-bottom:32px}
-.compare{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:24px 32px;min-width:160px;text-align:center}
-.card small{display:block;font-size:13px;color:#666;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase}
-.card strong{display:block;font-size:42px;font-weight:400}
-.card span{font-size:12px;color:#555}
-.card.danger strong{color:#ff2d55}
-.card.good strong{color:#00d084}
-ul{list-style:none;padding:0}
-.prob ul{max-width:420px;margin:0 auto;text-align:left}
-.prob li,.report li{color:#ccc;font-size:15px;line-height:1.6;margin-bottom:12px}
-.prob li::before,.report li::before{content:"→";color:#f0a500;margin-right:10px}
+.secondary{font-size:14px;color:#555;line-height:1.6}
+.score-badge{display:inline-block;background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:6px;padding:10px 20px;font-size:15px;color:#f0a500;margin-bottom:40px;letter-spacing:1px}
 .footer{margin-top:60px;font-size:12px;color:#444;letter-spacing:2px}
-.prog-wrap{margin-bottom:48px}
-.prog-meta{display:flex;justify-content:space-between;margin-bottom:10px;color:#555;font-size:13px}
-.prog-bg{height:2px;background:rgba(255,255,255,.06);border-radius:2px}
-.prog-fill{height:100%;background:#f0a500;border-radius:2px;transition:width .4s ease}
-.opts{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-.opt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#f0ede8;padding:16px 24px;border-radius:8px;font-size:15px;font-family:Georgia,serif;cursor:pointer;transition:.2s ease;text-align:left;width:100%}
-.opt:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);transform:translateX(4px)}
-.opt.sel{background:rgba(255,200,100,.15);border-color:#f0a500}
-.opt-letter{color:#f0a500;margin-right:12px;font-size:13px}
-.lead-form{display:flex;flex-direction:column;gap:14px;margin-top:8px}
-.lead-form input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#f0ede8;padding:16px;border-radius:8px;font-size:15px;font-family:Georgia,serif;width:100%}
-.lead-form input::placeholder{color:#777}
-.ring{display:inline-flex;align-items:center;justify-content:center;width:160px;height:160px;border-radius:50%;border:4px solid;font-size:48px;font-weight:400;margin-bottom:24px}
-.rlabel{display:inline-block;border:1px solid;padding:6px 20px;border-radius:4px;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px}
-.report-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px;margin-bottom:40px;text-align:left}
-.report-box h3{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:#f0a500;margin:0 0 20px}
-.money-box{background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:12px;padding:28px;margin-bottom:40px;color:#ccc;line-height:1.8}
-.money-box strong{color:#f0a500}
-.link-btn{display:block;margin:24px auto 0;background:none;border:none;color:#555;font-size:13px;cursor:pointer;font-family:Georgia,serif;text-decoration:underline}
-.err{color:#ff6b35;font-size:13px;text-align:center;margin-top:8px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.fade{animation:fadeUp .6s ease forwards}
+.wrap{animation:fadeUp .6s ease forwards}
 </style>
 </head>
 <body>
-<div class="page" id="app"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<div class="wrap">
+  <span class="eyebrow">VYNTAR</span>
+  <div id="scoreBadge"></div>
+  <span class="icon">🔍</span>
+  <h1>Your Audit Request Has Been Received</h1>
+  <p class="sub">You've just completed the visibility check — here's what happens next.</p>
+  <div class="confirm-box">
+    <h3>What We've Got</h3>
+    <div class="tick"><span class="tick-icon">✅</span><span>Your score has been saved</span></div>
+    <div class="tick"><span class="tick-icon">✅</span><span>Your business details have been received</span></div>
+    <div class="tick"><span class="tick-icon">✅</span><span>We'll check your visibility across 49 UK directories</span></div>
+    <div class="tick"><span class="tick-icon">✅</span><span>You'll receive a breakdown showing what's missing and how to fix it</span></div>
+  </div>
+  <div class="explain">
+    Most businesses are missing from key directories where customers are actively searching. That's where <strong>lost calls and enquiries happen</strong> — every single day.
+  </div>
+  <p class="urgency">We manually review each audit, so turnaround may vary slightly.</p>
+  <a class="cta" href="https://calendly.com/vyntarseo-com/30min" target="_blank">Book My Visibility Review</a>
+  <p class="secondary">Prefer to wait? We'll send your audit shortly.</p>
+  <p class="footer">BUILT BY VYNTAR — AI-POWERED VISIBILITY INTELLIGENCE</p>
+</div>
 <script>
-const SUPABASE_URL="https://cwiwdfzvswjqybhuhhte.supabase.co";
-const SUPABASE_KEY="sb_publishable_h27mwjjB0vOOtQG70UOWEw_MHQew6qy";
-const AUDIT_URL="https://vyntarseo.com";
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const Q=[
-  {q:"Do you appear in Google Maps for your main service?",o:["Yes, top 3","Yes, but not top 3","Not sure","No"],s:[20,10,5,0]},
-  {q:"How many online reviews do you have?",o:["50+","10–49","1–9","None"],s:[20,12,5,0]},
-  {q:"Do you rank on page 1 for your main keyword?",o:["Yes","Sometimes","Rarely","No"],s:[20,12,5,0]},
-  {q:"Are you listed on directories like Yell, Thomson Local or Yelp?",o:["Yes, multiple","One or two","Not sure","No"],s:[20,10,5,0]},
-  {q:"Is your business name, address and phone consistent everywhere online?",o:["Yes, definitely","Probably","Not sure","No"],s:[20,12,5,0]}
-];
-const getR=s=>{
-  if(s>=80)return{label:"Strong",color:"#00d084",msg:"You have solid local visibility — but there's still room to dominate your area.",sub:"Competitors are catching up. Let's lock in your position."};
-  if(s>=50)return{label:"Average",color:"#f0a500",msg:"You're visible in some places — but invisible where it matters most.",sub:"You're leaving serious revenue on the table every month."};
-  if(s>=25)return{label:"Weak",color:"#ff6b35",msg:"Your local presence has major gaps. Customers can't find you.",sub:"Competitors are picking up jobs that should be yours."};
-  return{label:"Critical",color:"#ff2d55",msg:"Your business is essentially invisible online right now.",sub:"Every day without action is revenue going to your competitors."};
-};
-let stage="hero",cur=0,sel=null,score=0,lead={name:"",email:"",business:""};
-const app=document.getElementById("app");
-const render=()=>{
-  if(stage==="hero"){
-    app.innerHTML=`
-      <section class="center fade">
-        <span class="eyebrow">VYNTAR</span>
-        <h1>Check Your Business<br><span>Visibility Score</span><br>in 30 Seconds</h1>
-        <p class="sub">Find out why you're not showing on Google or AI search — and how many customers you're losing because of it.</p>
-        <button class="cta" onclick="start()">Check My Score Now →</button>
-        <p class="micro">No signup required · Takes 30 seconds · Instant results</p>
-        <div class="prob">
-          <h2>Most Local Businesses Are<br><span>Invisible — And Don't Know It</span></h2>
-          <p>If your business isn't showing up on Google Maps, local search, or AI answers, you're losing customers every day.</p>
-          <div class="compare">
-            <div class="card danger"><small>You</small><strong>18%</strong><span>Visibility</span></div>
-            <div class="card good"><small>Competitor</small><strong>67%</strong><span>Visibility</span></div>
-          </div>
-          <ul>
-            <li>Most businesses have under 20% visibility</li>
-            <li>Competitors dominate with 40+ citations</li>
-            <li>Business data is inconsistent or missing</li>
-          </ul>
-        </div>
-        <button class="cta" onclick="start()">Get My Visibility Score →</button>
-        <p class="footer">BUILT BY VYNTAR — AI-POWERED VISIBILITY INTELLIGENCE</p>
-      </section>`;
-  } else if(stage==="quiz"){
-    const pct=Math.round(((cur+1)/Q.length)*100);
-    app.innerHTML=`
-      <section class="fade">
-        <span class="eyebrow c">VYNTAR</span>
-        <div class="prog-wrap">
-          <div class="prog-meta"><span>Question ${cur+1} of ${Q.length}</span><span>${pct}% complete</span></div>
-          <div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div>
-        </div>
-        <h2>${Q[cur].q}</h2>
-        <div class="opts">${Q[cur].o.map((o,i)=>`
-          <button class="opt${sel===i?" sel":""}" onclick="ans(${i})" ${sel!==null?"disabled":""}>
-            <span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}
-          </button>`).join("")}
-        </div>
-      </section>`;
-  } else if(stage==="lead"){
-    app.innerHTML=`
-      <section class="fade">
-        <span class="eyebrow c">VYNTAR</span>
-        <h2>Almost done — where should we send your visibility score?</h2>
-        <p class="sub sm">Your score is ready. Enter your details to unlock the result and full audit options.</p>
-        <div class="lead-form">
-          <input id="fn" placeholder="Your name" required>
-          <input id="fe" type="email" placeholder="Email address" required>
-          <input id="fb" placeholder="Business name" required>
-          <button class="cta" id="submitBtn" onclick="submitLead()">Show My Score →</button>
-          <p class="err" id="errMsg"></p>
-        </div>
-      </section>`;
-  } else {
-    const r=getR(score);
-    app.innerHTML=`
-      <section class="center fade">
-        <span class="eyebrow">VYNTAR</span>
-        <div class="ring" style="border-color:${r.color};color:${r.color};box-shadow:0 0 40px ${r.color}44">${score}%</div>
-        <div class="rlabel" style="border-color:${r.color}66;background:${r.color}22;color:${r.color}">${r.label}</div>
-        <h2>${r.msg}</h2>
-        <p class="sub">${r.sub}</p>
-        <div class="report-box">
-          <h3>Your Full Report Includes</h3>
-          <ul class="report">
-            <li>Full visibility score across 49 UK directories</li>
-            <li>How you compare to local competitors</li>
-            <li>Exactly where you're losing customers</li>
-            <li>How much revenue you're missing</li>
-            <li>A 90-day fix plan</li>
-          </ul>
-        </div>
-        <div class="money-box">A top 3 position in your local area can be worth <strong>£30,000–£60,000 per year</strong> in new business.</div>
-        <p class="sub sm">Most businesses start from just <strong>£197/month</strong> — less than the value of one job.</p>
-        <button class="cta" onclick="window.open('${AUDIT_URL}','_blank')">Get My Full 49-Directory Audit →</button>
-        <button class="link-btn" onclick="start()">Retake quiz</button>
-        <p class="footer">BUILT BY VYNTAR — AI-POWERED VISIBILITY INTELLIGENCE</p>
-      </section>`;
+  const params=new URLSearchParams(window.location.search);
+  const score=params.get('score');
+  if(score){
+    document.getElementById('scoreBadge').innerHTML=
+      `<div class="score-badge">Your visibility score: ${score}%</div>`;
   }
-};
-window.start=()=>{stage="quiz";cur=0;score=0;sel=null;render();window.scrollTo(0,0)};
-window.ans=(i)=>{
-  if(sel!==null)return;
-  sel=i;render();
-  setTimeout(()=>{
-    score+=Q[cur].s[i];cur++;
-    if(cur>=Q.length){stage="lead";sel=null;}
-    else{sel=null;}
-    render();window.scrollTo(0,0);
-  },400);
-};
-window.submitLead=async()=>{
-  const n=document.getElementById("fn"),e=document.getElementById("fe"),b=document.getElementById("fb");
-  const btn=document.getElementById("submitBtn"),err=document.getElementById("errMsg");
-  if(!n.value||!e.value||!b.value){err.textContent="Please fill in all fields.";return;}
-  lead={name:n.value,email:e.value,business:b.value};
-  btn.disabled=true;btn.textContent="Saving...";
-  const{error}=await sb.from("quiz_leads").insert({
-    name:lead.name,email:lead.email,business:lead.business,score:score,result:getR(score).label
-  });
-  if(error){
-    console.error(error);
-    err.textContent="Something went wrong. Please try again.";
-    btn.disabled=false;btn.textContent="Show My Score →";
-    return;
-  }
-  stage="results";render();window.scrollTo(0,0);
-};
-render();
 </script>
 </body>
 </html>
+

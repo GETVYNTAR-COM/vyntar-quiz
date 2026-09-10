@@ -99,10 +99,10 @@ const Q=[
   {q:"Is your business name, address and phone consistent everywhere online?",o:["Yes, definitely","Probably","Not sure","No"],s:[20,12,5,0]}
 ];
 const getR=s=>{
-  if(s>=80)return{label:"Strong",color:"#00d084",msg:"You have solid local visibility — but there's still room to dominate your area.",sub:"Competitors are catching up. Let's lock in your position."};
-  if(s>=50)return{label:"Average",color:"#f0a500",msg:"You're visible in some places — but invisible where it matters most.",sub:"You're leaving serious revenue on the table every month."};
-  if(s>=25)return{label:"Weak",color:"#ff6b35",msg:"Your local presence has major gaps. Customers can't find you.",sub:"Competitors are picking up jobs that should be yours."};
-  return{label:"Critical",color:"#ff2d55",msg:"Your business is essentially invisible online right now.",sub:"Every day without action is revenue going to your competitors."};
+  if(s>=80)return{label:"Strong",color:"#00d084"};
+  if(s>=50)return{label:"Average",color:"#f0a500"};
+  if(s>=25)return{label:"Weak",color:"#ff6b35"};
+  return{label:"Critical",color:"#ff2d55"};
 };
 let stage="hero",cur=0,sel=null,score=0,lead={name:"",email:"",business:""};
 const app=document.getElementById("app");
@@ -194,21 +194,17 @@ const render=()=>{
         <span class="eyebrow">VYNTAR</span>
         <div class="ring" style="border-color:${r.color};color:${r.color};box-shadow:0 0 40px ${r.color}44">${score}%</div>
         <div class="rlabel" style="border-color:${r.color}66;background:${r.color}22;color:${r.color}">${r.label}</div>
-        <h2>${r.msg}</h2>
-        <p class="sub">${r.sub}</p>
+        <h2>Your business is harder to find online than it should be.</h2>
         <div class="report-box">
           <h3>Your Full Report Includes</h3>
           <ul class="report">
             <li>Full visibility score across 49 UK directories</li>
             <li>How you compare to local competitors</li>
             <li>Exactly where you're losing customers</li>
-            <li>How much revenue you're missing</li>
             <li>A 90-day fix plan</li>
           </ul>
         </div>
-        <div class="money-box">A top 3 position in your local area can be worth <strong>£30,000–£60,000 per year</strong> in new business.</div>
-        <p class="sub sm">Most businesses start from just <strong>£197/month</strong> — less than the value of one job.</p>
-        <button class="cta" onclick="window.location.href='?audit=1&score=${score}'">Get My Full 49-Directory Audit →</button>
+        <a class="cta-link" href="${CALENDLY}" target="_blank" rel="noopener">Book a 15-Min Call — I'll Walk You Through Your Audit</a>
         <button class="link-btn" onclick="start()">Retake quiz</button>
         <p class="contact">Questions? Email <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
         <p class="footer">BUILT BY VYNTAR — AI-POWERED VISIBILITY INTELLIGENCE</p>

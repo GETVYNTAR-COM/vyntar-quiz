@@ -1,0 +1,11 @@
+{
+  "name": "vyntar-quiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VYNTAR Visibility Quiz — static front end plus the evidence request route.",
+  "scripts": {
+    "lint": "node --check api/evidence-request.js && node --check lib/evidence.js && node --check lib/validation.js",
+    "test": "node --test tests/*.test.js"
+  }
+}

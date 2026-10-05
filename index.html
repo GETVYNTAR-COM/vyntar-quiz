@@ -47,9 +47,15 @@ ul{list-style:none;padding:0}
 .opt:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);transform:translateX(4px)}
 .opt.sel{background:rgba(255,200,100,.15);border-color:#f0a500}
 .opt-letter{color:#f0a500;margin-right:12px;font-size:13px}
-.lead-form{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.lead-form{display:flex;flex-direction:column;gap:18px;margin-top:8px}
 .lead-form input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#f0ede8;padding:16px;border-radius:8px;font-size:15px;font-family:Georgia,serif;width:100%}
 .lead-form input::placeholder{color:#777}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:13px;letter-spacing:1px;color:#999}
+.field input[aria-invalid="true"]{border-color:#ff6b35}
+.field-err{color:#ff6b35;font-size:13px;min-height:1px}
+.form-note{font-size:13px;color:#555;line-height:1.6;text-align:center;margin-top:4px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .ring{display:inline-flex;align-items:center;justify-content:center;width:160px;height:160px;border-radius:50%;border:4px solid;font-size:48px;font-weight:400;margin-bottom:24px}
 .rlabel{display:inline-block;border:1px solid;padding:6px 20px;border-radius:4px;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px}
 .report-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px;margin-bottom:40px;text-align:left}
@@ -78,19 +84,46 @@ ul{list-style:none;padding:0}
 <body>
 <div id="app"></div>
 <script>
-const SUPABASE_URL="https://cwiwdfzvswjqybhuhhte.supabase.co";
-const SUPABASE_KEY="sb_publishable_h27mwjjB0vOOtQG70UOWEw_MHQew6qy";
+const EVIDENCE_ENDPOINT="/api/evidence-request";
 const CALENDLY="https://calendly.com/vyntarseo-com/30min";
 const CALENDLY_QUIZ="https://calendly.com/vyntarseo-com/seo-quiz";
 const CONTACT_EMAIL="hello@vyntarseo.com";
 const isAudit=window.location.search.includes('audit=1');
-const insertLead=async(data)=>{
-  const res=await fetch(`${SUPABASE_URL}/rest/v1/quiz_leads`,{
+const FIELDS=[
+  {id:"fn",name:"name",label:"Your name",type:"text",placeholder:"Your name",autocomplete:"name",max:80},
+  {id:"fe",name:"email",label:"Email address",type:"email",placeholder:"Email address",autocomplete:"email",max:120},
+  {id:"fb",name:"business_name",label:"Business name",type:"text",placeholder:"Business name",autocomplete:"organization",max:80},
+  {id:"ft",name:"town",label:"Town or city",type:"text",placeholder:"Town or city",autocomplete:"address-level2",max:40},
+  {id:"fs",name:"service",label:"Service",type:"text",placeholder:"e.g. roofer, plumber, cafe",autocomplete:"off",max:40}
+];
+const LIMITS={name:80,email:120,business_name:80,town:40,service:40};
+// Mirrors lib/validation.js. The server revalidates everything; this is only
+// so the customer sees the problem without a round trip.
+const SCHEME_RE=/(?:[a-z][a-z0-9+.-]*:\/\/|\bwww\.)/i;
+const BARE_DOMAIN_RE=/\b[a-z0-9][a-z0-9-]*\.(?:co\.uk|org\.uk|me\.uk|com|net|org|io|uk|biz|info|dev|app|shop|store|online|site|xyz|me|ltd|agency|services|solutions|email|co)\b/i;
+const EMAIL_RE=/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
+const fieldError=(f,value)=>{
+  if(!value)return `${f.label} is required.`;
+  if(value.length>LIMITS[f.name])return `${f.label} must be ${LIMITS[f.name]} characters or fewer.`;
+  if(f.name==="email"){
+    if(SCHEME_RE.test(value))return `${f.label} cannot contain a web address.`;
+    if(!EMAIL_RE.test(value))return "Enter a valid email address.";
+    return "";
+  }
+  if(SCHEME_RE.test(value)||BARE_DOMAIN_RE.test(value))return `${f.label} cannot contain a web address.`;
+  return "";
+};
+const sendEvidenceRequest=async(payload)=>{
+  const res=await fetch(EVIDENCE_ENDPOINT,{
     method:"POST",
-    headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`,"Prefer":"return=minimal"},
-    body:JSON.stringify(data)
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
   });
-  if(!res.ok){const err=await res.text();throw new Error(err);}
+  if(res.status===400){
+    const data=await res.json().catch(()=>({}));
+    return {ok:false,errors:data.errors||{}};
+  }
+  return {ok:true};
 };
 const Q=[
   {q:"Do you appear in Google Maps for your main service?",o:["Yes, top 3","Yes, but not top 3","Not sure","No"],s:[20,10,5,0]},
@@ -105,7 +138,7 @@ const getR=s=>{
   if(s>=25)return{label:"Weak",color:"#ff6b35"};
   return{label:"Critical",color:"#ff2d55"};
 };
-let stage="hero",cur=0,sel=null,score=0,lead={name:"",email:"",business:""};
+let stage="hero",cur=0,sel=null,score=0;
 const app=document.getElementById("app");
 const renderAudit=()=>{
   const s=new URLSearchParams(window.location.search).get('score');
@@ -179,15 +212,26 @@ const render=()=>{
       <div class="page fade">
         <span class="eyebrow c">VYNTAR</span>
         <h2>Almost done — where should we send your visibility score?</h2>
-        <p class="sub sm">Your score is ready. Enter your details to unlock the result and full audit options.</p>
-        <div class="lead-form">
-          <input id="fn" placeholder="Your name" required>
-          <input id="fe" type="email" placeholder="Email address" required>
-          <input id="fb" placeholder="Business name" required>
-          <button class="cta" id="submitBtn" onclick="submitLead()">Show My Score →</button>
+        <p class="sub sm">VYNTAR will verify your real Google Maps and search visibility.</p>
+        <form class="lead-form" id="leadForm" novalidate>
+          ${FIELDS.map(f=>`
+          <div class="field">
+            <label for="${f.id}">${f.label}</label>
+            <input id="${f.id}" name="${f.name}" type="${f.type}"
+              placeholder="${f.placeholder}" ${f.max?`maxlength="${f.max}"`:""}
+              autocomplete="${f.autocomplete}" required
+              aria-describedby="${f.id}-err">
+            <p class="field-err" id="${f.id}-err" role="alert"></p>
+          </div>`).join("")}
+          <div class="hp" aria-hidden="true">
+            <label for="fw">Website</label>
+            <input id="fw" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <button class="cta" id="submitBtn" type="submit">Show My Score →</button>
+          <p class="form-note">We'll use your details to contact you about your check.</p>
           <p class="err" id="errMsg"></p>
-        </div>
-      </div>`;
+        </form>`;
+    document.getElementById("leadForm").addEventListener("submit",e=>{e.preventDefault();submitLead();});
   } else {
     const r=getR(score);
     app.innerHTML=`
@@ -223,19 +267,52 @@ window.ans=(i)=>{
     render();window.scrollTo(0,0);
   },400);
 };
+const showResults=()=>{stage="results";render();window.scrollTo(0,0);};
+const setFieldError=(f,message)=>{
+  const input=document.getElementById(f.id);
+  const slot=document.getElementById(`${f.id}-err`);
+  if(slot)slot.textContent=message;
+  if(input){
+    if(message)input.setAttribute("aria-invalid","true");
+    else input.removeAttribute("aria-invalid");
+  }
+};
 window.submitLead=async()=>{
-  const n=document.getElementById("fn"),e=document.getElementById("fe"),b=document.getElementById("fb");
   const btn=document.getElementById("submitBtn"),err=document.getElementById("errMsg");
-  if(!n.value||!e.value||!b.value){err.textContent="Please fill in all fields.";return;}
-  lead={name:n.value,email:e.value,business:b.value};
+  err.textContent="";
+  const values={};let firstInvalid=null;
+  for(const f of FIELDS){
+    const input=document.getElementById(f.id);
+    const value=(input.value||"").trim();
+    input.value=value;
+    values[f.name]=value;
+    const message=fieldError(f,value);
+    setFieldError(f,message);
+    if(message&&!firstInvalid)firstInvalid=input;
+  }
+  if(firstInvalid){firstInvalid.focus();return;}
+
   btn.disabled=true;btn.textContent="Saving...";
+  const hp=document.getElementById("fw");
   try{
-    await insertLead({name:lead.name,email:lead.email,business:lead.business,score:score,result:getR(score).label});
-    stage="results";render();window.scrollTo(0,0);
+    const outcome=await sendEvidenceRequest({...values,website:hp?hp.value:"",score:score});
+    if(!outcome.ok){
+      let firstServerInvalid=null;
+      for(const f of FIELDS){
+        const message=outcome.errors[f.name]||"";
+        setFieldError(f,message);
+        if(message&&!firstServerInvalid)firstServerInvalid=document.getElementById(f.id);
+      }
+      btn.disabled=false;btn.textContent="Show My Score →";
+      if(firstServerInvalid)firstServerInvalid.focus();
+      else err.textContent="Please check your details and try again.";
+      return;
+    }
+    showResults();
   }catch(e){
-    console.error(e);
-    err.textContent="Something went wrong. Please try again.";
-    btn.disabled=false;btn.textContent="Show My Score →";
+    // The score is the customer's own self-assessment and is already known.
+    // A transport failure must never withhold it.
+    showResults();
   }
 };
 render();
